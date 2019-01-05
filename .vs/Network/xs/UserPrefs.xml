@@ -1,0 +1,20 @@
+﻿<Properties StartupConfiguration="{489E3B32-240D-EBB5-C4E9-5EEE70BB3EEC}|">
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/NetworkClient.cs">
+    <Files>
+      <File FileName="Assets/Scripts/NetworkServer.cs" Line="23" Column="15" />
+      <File FileName="Assets/Scripts/SerializationUtility.cs" Line="12" Column="21" />
+      <File FileName="Assets/Scripts/BaseMessage.cs" Line="14" Column="21" />
+      <File FileName="Assets/Scripts/NetworkServerRecieveService.cs" Line="49" Column="59" />
+      <File FileName="Assets/Scripts/NetworkServerSendService.cs" Line="51" Column="14" />
+      <File FileName="Assets/Scripts/NetworkClient.cs" Line="5" Column="20" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.Network PreferredExecutionTarget="Unity.Editor" />
+  <MultiItemStartupConfigurations />
+</Properties>
