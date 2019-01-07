@@ -5,6 +5,8 @@ using UnityEngine;
 
 [Serializable]
 public class BaseMessage  {
+
+    public long frame;
     public int id;
     public int id1;
     public string name;
@@ -14,4 +16,5 @@ public class BaseMessage  {
         id1 = 99999;
         name = "dddddddddddd";
     }
+
 }

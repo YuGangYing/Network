@@ -12,8 +12,10 @@ namespace BlueNoah.Net
         {
             sendService = new NetworkServerSendService();
             sendService.Init();
+
             recieveService = new NetworkServerRecieveService();
             recieveService.Init();
+            recieveService.onRecieve = OnRecieve;
         }
 
 		private void Update()
@@ -28,5 +30,11 @@ namespace BlueNoah.Net
             sendService.StopReceive();
             recieveService.StopReceive();
 		}
+
+        public void OnRecieve(byte[] data, System.Net.IPEndPoint iPEndPoint)
+        {
+            sendService.Send(data);
+        }
+
 	}
 }

@@ -13,22 +13,22 @@ namespace BlueNoah.Net
         //メセージを監視用スレッド
         public Thread thread;
 
-        public UnityAction<BaseMessage> onRecieve;
+        public UnityAction<byte[],IPEndPoint> onRecieve;
 
         public void Init()
         {
             //監視しているポート
-            int LOCAL_PORT = 50001;
-            udp = new UdpClient(LOCAL_PORT);
+            udp = new UdpClient(NetworkConstant.SERVER_PORT);
             thread = new Thread(ThreadMethod);
             thread.IsBackground = true;
             thread.Start(this);
-            onRecieve = OnRecieve;
         }
 
-        public void OnRecieve(BaseMessage baseMessage)
+        public void OnRecieve(byte[] data,IPEndPoint iPEndPoint)
         {
-            Debug.Log(baseMessage.id);
+            Debug.Log(System.DateTime.Now.Ticks / 10000);
+            if (onRecieve != null)
+                onRecieve(data,iPEndPoint);
         }
 
         public void StopReceive()
@@ -37,22 +37,22 @@ namespace BlueNoah.Net
             thread.Abort();
         }
 
-        static bool isRunning = true;
+        public bool isRunning = true;
         static void ThreadMethod(object obj)
         {
             NetworkServerRecieveService networkServerRecieveService = obj as NetworkServerRecieveService;
-            while (isRunning)
+            while (networkServerRecieveService.isRunning)
             {
                 //メセージを受け取っていない時、読み取ない。
                 if (networkServerRecieveService.udp.Available == 0)
                 {
-                    //Thread.Sleep (100);
                     continue;
                 }
                 IPEndPoint remoteEP = null;
                 byte[] data = networkServerRecieveService.udp.Receive(ref remoteEP);
-                BaseMessage baseMessage = SerializationUtility.DeserializeObject(data) as BaseMessage;
-                networkServerRecieveService.OnRecieve(baseMessage);
+                //BaseMessage baseMessage = SerializationUtility.DeserializeObject(data) as BaseMessage;
+                if(networkServerRecieveService!=null)
+                    networkServerRecieveService.OnRecieve(data,remoteEP);
             }
             Debug.Log("Thread Done!");
         }
