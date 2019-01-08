@@ -1,26 +1,31 @@
 ﻿using UnityEngine;
-using System.Collections;
+namespace BlueNoah.Net
+{
+    public class SingleMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+    {
 
-public class SingleMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour{
+        private static T t;
 
-	private static T t;
+        public static T Instance
+        {
+            get
+            {
+                if (t == null)
+                {
+                    t = GameObject.FindObjectOfType(typeof(T)) as T;
+                }
+                return t;
+            }
+        }
 
-	public static T Instance{
-		get{ 
-			if (t == null) {
-				t = GameObject.FindObjectOfType(typeof(T)) as T;
-			}
-			return t;
-		}
-	}
+        protected virtual void Awake()
+        {
+            if (t == null)
+            {
+                t = gameObject.GetComponent<T>();
+            }
+        }
 
-	protected virtual void Awake(){
-		if(t==null){
-			t = gameObject.GetComponent<T> ();
-		}
-	}
-
-	protected bool isInited;
-
-
+        protected bool isInited;
+    }
 }

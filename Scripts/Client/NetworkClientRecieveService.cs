@@ -31,9 +31,11 @@ namespace BlueNoah.Net
         public void OnRecieve(NetworkData networkData)
         {
             Debug.Log(System.DateTime.Now.Ticks / 10000);
-            if (functionDic.ContainsKey(networkData.functionId))
-            {
-                functionDic[networkData.functionId](networkData.baseMessage);
+            if(networkData!=null){
+                if (functionDic.ContainsKey(networkData.functionId))
+                {
+                    functionDic[networkData.functionId](networkData.baseMessage);
+                }
             }
             //if (onRecieve != null)
                 //onRecieve(networkData);
@@ -41,6 +43,7 @@ namespace BlueNoah.Net
 
         public void StopReceive()
         {
+            Debug.Log("StopReceive");
             udp.Close();
             thread.Abort();
         }
@@ -54,17 +57,19 @@ namespace BlueNoah.Net
         }
 
         public bool isRunning = true;
-        static void ThreadMethod(object obj)
+        void ThreadMethod(object obj)
         {
             NetworkClientRecieveService networkClientRecieveService = obj as NetworkClientRecieveService;
             Debug.Log("NetworkClientRecieveService Prepared.");
-            while (networkClientRecieveService.isRunning)
+            while (true)
             {
+                //Debug.Log(System.DateTime.Now.Ticks / 10000);
                 //メセージを受け取っていない時、読み取ない。
                 if (networkClientRecieveService.udp.Available == 0)
                 {
                     continue;
                 }
+                Debug.LogError(System.DateTime.Now.Ticks / 10000);
                 IPEndPoint remoteEP = null;
                 byte[] data = networkClientRecieveService.udp.Receive(ref remoteEP);
                 NetworkData networkData = SerializationUtility.DeserializeObject(data) as NetworkData;

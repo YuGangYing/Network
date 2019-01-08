@@ -1,8 +1,8 @@
 public static class NetworkConstant 
 {
-    public const int SERVER_PORT = 50001;
+    public const int SERVER_PORT = 50003;
 
-    public const int CLIENT_PORT = 60001;
+    public const int CLIENT_PORT = 60003;
 
     public const string SERVER_IP = "127.0.0.1";
 

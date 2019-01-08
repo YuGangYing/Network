@@ -9,12 +9,11 @@ namespace BlueNoah.Net
 {
     public class NetworkServerSendService
     {
-        static IPEndPoint mIPEndPoint;
+        //static IPEndPoint mIPEndPoint;
         public static UdpClient udp;
         public Thread thread;
-        public List<BaseMessage> messages;
+        //public List<BaseMessage> messages;
         public List<byte[]> datas;
-
         public Dictionary<string, IPEndPoint> targetPoints;
         public bool isBegin = false;
 
@@ -22,16 +21,13 @@ namespace BlueNoah.Net
         {
             //監視しているポート
             udp = new UdpClient();
-            messages = new List<BaseMessage>();
             datas = new List<byte[]>();
             targetPoints = new Dictionary<string, IPEndPoint>();
-            IPAddress address = IPAddress.Parse(NetworkConstant.CLIENT_IP);
-            mIPEndPoint = new IPEndPoint(address, NetworkConstant.CLIENT_PORT);
+            //IPAddress address = IPAddress.Parse(NetworkConstant.CLIENT_IP);
+            //mIPEndPoint = new IPEndPoint(address, NetworkConstant.CLIENT_PORT);
             thread = new Thread(ThreadMethod);
             thread.IsBackground = true;
             thread.Start(this);
-
-            isBegin = true;
         }
 
         public void StopReceive()
@@ -51,24 +47,21 @@ namespace BlueNoah.Net
             {
                 if (networkServerSendService.isBegin)
                 {
-                    //Debug.Log(DateTime.Now.Ticks / 10000);
-                    if (networkServerSendService.messages.Count == 0)
+                    if (networkServerSendService.datas.Count == 0)
                     {
                         BaseMessage baseMessage = new BaseMessage();
                         baseMessage.frame = frame;
-                        networkServerSendService.messages.Add(baseMessage);
+                        networkServerSendService.datas.Add(SerializationUtility.SerializeObject(baseMessage));
                     }
-                    for (int i = 0; i < networkServerSendService.messages.Count; i++)
+
+                    foreach (IPEndPoint iPEndPoint in networkServerSendService.targetPoints.Values)
                     {
-                        byte[] data = SerializationUtility.SerializeObject(networkServerSendService.messages[i]);
-                        udp.Send(data, data.Length, mIPEndPoint);
+                        for (int i = 0; i < networkServerSendService.datas.Count; i++)
+                        {
+                            udp.Send(networkServerSendService.datas[i], networkServerSendService.datas[i].Length, iPEndPoint);
+                        }
                     }
-                    for (int i = 0; i < networkServerSendService.datas.Count; i++)
-                    {
-                        udp.Send(networkServerSendService.datas[i], networkServerSendService.datas[i].Length, mIPEndPoint);
-                        Debug.Log("Send:" + networkServerSendService.datas[i].Length);
-                    }
-                    networkServerSendService.messages.Clear();
+
                     networkServerSendService.datas.Clear();
                     long nowTime = DateTime.Now.Ticks / 10000;
                     long time = startTime + frame * NetworkConstant.SERVER_SEND_RATE;
@@ -84,24 +77,10 @@ namespace BlueNoah.Net
             Debug.Log("Thread Done!");
         }
 
-        public void Send<T>(T baseMessage) where T : BaseMessage
-        {
-            messages.Add(baseMessage);
-        }
-
-        public void Send(byte[] data)
+        public void SendToAll(byte[] data)
         {
             Debug.Log("Send");
             datas.Add(data);
-        }
-
-        public void AddTargetPoint(IPEndPoint iPEndPoint)
-        {
-            string key = iPEndPoint.Address.ToString() + ":" + iPEndPoint.Port;
-            if (!targetPoints.ContainsKey(key))
-            {
-                targetPoints.Add(key, iPEndPoint);
-            }
         }
     }
 }

@@ -17,7 +17,6 @@ public class ActionController : MonoBehaviour {
         object obj = SerializationUtility.DeserializeObject(data);
         handleMessage = (HandleMessage)obj;
         Debug.Log(handleMessage.handleId);
-
         mNetworkClient.Register(FunctionConstant.CHANGE_DIRECT,OnChangeDirect);
 	}
 	

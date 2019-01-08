@@ -13,7 +13,9 @@ namespace BlueNoah.Net
         //メセージを監視用スレッド
         public Thread thread;
 
-        public UnityAction<byte[],IPEndPoint> onRecieve;
+        public UnityAction<byte[], IPEndPoint> onRecieve;
+
+        NetworkServer mNetworkServer;
 
         public void Init()
         {
@@ -24,11 +26,11 @@ namespace BlueNoah.Net
             thread.Start(this);
         }
 
-        public void OnRecieve(byte[] data,IPEndPoint iPEndPoint)
+        public void OnRecieve(byte[] data, IPEndPoint iPEndPoint)
         {
             Debug.Log(System.DateTime.Now.Ticks / 10000);
             if (onRecieve != null)
-                onRecieve(data,iPEndPoint);
+                onRecieve(data, iPEndPoint);
         }
 
         public void StopReceive()
@@ -51,8 +53,8 @@ namespace BlueNoah.Net
                 IPEndPoint remoteEP = null;
                 byte[] data = networkServerRecieveService.udp.Receive(ref remoteEP);
                 //BaseMessage baseMessage = SerializationUtility.DeserializeObject(data) as BaseMessage;
-                if(networkServerRecieveService!=null)
-                    networkServerRecieveService.OnRecieve(data,remoteEP);
+                if (networkServerRecieveService != null)
+                    networkServerRecieveService.OnRecieve(data, remoteEP);
             }
             Debug.Log("Thread Done!");
         }

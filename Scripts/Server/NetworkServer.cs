@@ -1,40 +1,56 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Net;
+using UnityEngine;
 
 namespace BlueNoah.Net
 {
     public class NetworkServer : MonoBehaviour
     {
-        NetworkServerSendService sendService;
+        NetworkServerSendService mNetworkServerSendService;
 
-        NetworkServerRecieveService recieveService;
+        NetworkServerRecieveService mNetworkServerRecieveService;
+
+        Dictionary<string, IPEndPoint> mTargetPoints;
+
+        int mMaxPlayer = 1;
+
+        bool mIsBegin = false;
 
         void Start()
         {
-            sendService = new NetworkServerSendService();
-            sendService.Init();
-
-            recieveService = new NetworkServerRecieveService();
-            recieveService.Init();
-            recieveService.onRecieve = OnRecieve;
+            mTargetPoints = new Dictionary<string, IPEndPoint>();
+            mNetworkServerSendService = new NetworkServerSendService();
+            mNetworkServerSendService.Init();
+            mNetworkServerSendService.targetPoints = mTargetPoints;
+            mNetworkServerRecieveService = new NetworkServerRecieveService();
+            mNetworkServerRecieveService.Init();
+            mNetworkServerRecieveService.onRecieve = OnRecieve;
         }
 
-		private void Update()
-		{
-            BaseMessage baseMessage = new BaseMessage();
-            baseMessage.id = Time.frameCount;
-            //sendService.Send<BaseMessage>(baseMessage);
-		}
-
-		private void OnDestroy()
-		{
-            sendService.StopReceive();
-            recieveService.StopReceive();
-		}
-
-        public void OnRecieve(byte[] data, System.Net.IPEndPoint iPEndPoint)
+        void OnDestroy()
         {
-            sendService.Send(data);
+            mNetworkServerSendService.StopReceive();
+            mNetworkServerRecieveService.StopReceive();
         }
 
-	}
+        public void OnRecieve(byte[] data, IPEndPoint iPEndPoint)
+        {
+            if(!mIsBegin){
+                if (!mTargetPoints.ContainsKey(iPEndPoint.ToString()))
+                {
+                    mTargetPoints.Add(iPEndPoint.ToString(), iPEndPoint);
+                    Debug.Log("<color=green> Player Enter. </color>");
+                    if (mTargetPoints.Count == Mathf.Max(1,mMaxPlayer) )
+                    {
+                        mIsBegin = true;
+                        mNetworkServerSendService.isBegin = true;
+                        Debug.Log("<color=yellow> Begin. </color>");
+                    }
+                }
+            }else{
+                mNetworkServerSendService.SendToAll(data);
+            }
+           
+        }
+    }
 }
